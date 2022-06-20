@@ -24,12 +24,12 @@ public class MessageRepositoryImpl implements MessageRepository, PanacheReposito
 	}
 
 	@Override
-	public List<Message> findMessageByUserId(Long userId) {
+	public List<Message> findMessagesByUserId(Long userId) {
 		return find("user_id", userId).list();
 	}
 
 	@Override
 	public List<Message> listMessage() {
 		return listAll();
-	}	
+	}
 }

@@ -17,27 +17,27 @@ import org.hibernate.annotations.UpdateTimestamp;
 @Table(name = "message")
 public class Message {
 
-	 @Id
-	 @GeneratedValue(strategy = GenerationType.IDENTITY)
-	 private Long id;
- 
-	 @Column(name="user_id", nullable = false)
-	 private Long userId;
- 
-	 @Size(max = 1024)
-	 @Column(name="content", nullable = false)
-	 private String content;
+  @Id
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  private Long id;
 
-	 @CreationTimestamp
-	 @Column(name="created_at", nullable = false)
-	 private Timestamp createdAt;
-	 
-	 @UpdateTimestamp
-	 @Column(name="updated_at")
-	 private Timestamp updatedAt;
+  @Column(name="user_id", nullable = false)
+  private Long userId;
 
-	 @Column(name="deleted_at")
-	 private Timestamp deletedAt;
+  @Size(max = 1024)
+  @Column(name="content", nullable = false)
+  private String content;
+
+  @CreationTimestamp
+  @Column(name="created_at", nullable = false)
+  private Timestamp createdAt;
+
+  @UpdateTimestamp
+  @Column(name="updated_at")
+  private Timestamp updatedAt;
+
+  @Column(name="deleted_at")
+  private Timestamp deletedAt;
 
 	public Long getId() {
 		return id;

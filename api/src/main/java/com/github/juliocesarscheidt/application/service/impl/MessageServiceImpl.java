@@ -22,13 +22,13 @@ public class MessageServiceImpl implements MessageService {
 
 	private final MessageRepository messageRepository;
 	private final Mapper mapper;
-	
+
 	@Inject
 	public MessageServiceImpl(MessageRepository messageRepository) {
 		this.messageRepository = messageRepository;
 		mapper = new DozerBeanMapper();
 	}
-	
+
 	@Transactional
 	@Override
 	public MessageCreateResponseDto createMessage(MessageCreateRequestDto dto) {
@@ -46,8 +46,8 @@ public class MessageServiceImpl implements MessageService {
 	}
 
 	@Override
-	public List<MessageDto> findMessageByUserId(Long userId) {
-		List<Message> messages = messageRepository.findMessageByUserId(userId);
+	public List<MessageDto> findMessagesByUserId(Long userId) {
+		List<Message> messages = messageRepository.findMessagesByUserId(userId);
 		if (messages == null) return null;
 		return messages.stream()
 			.map(message -> mapper.map(message, MessageDto.class))

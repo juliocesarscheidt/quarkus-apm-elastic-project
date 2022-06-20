@@ -12,7 +12,7 @@ public interface MessageService {
 
 	public MessageDto findMessageById(Long id);
 
-	public List<MessageDto> findMessageByUserId(Long userId);
+	public List<MessageDto> findMessagesByUserId(Long userId);
 
 	public List<MessageDto> listMessage();
 }

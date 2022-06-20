@@ -10,7 +10,7 @@ public interface MessageRepository {
 
 	public Message findMessageById(Long id);
 
-	public List<Message> findMessageByUserId(Long userId);
-	
+	public List<Message> findMessagesByUserId(Long userId);
+
 	public List<Message> listMessage();
 }

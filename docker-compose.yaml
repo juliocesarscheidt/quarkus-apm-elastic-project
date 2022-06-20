@@ -1,6 +1,29 @@
 version: '3.4'
 
 services:
+  quarkusapi:
+    container_name: quarkusapi
+    hostname: quarkusapi
+    image: juliocesarmidia/quarkusapi:latest
+    build:
+      context: ./api
+    restart: on-failure
+    ports:
+      - 8080:8080
+    environment:
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASS: ${MYSQL_PASS}
+      MYSQL_HOST: ${MYSQL_HOST}
+      MYSQL_PORT: ${MYSQL_PORT}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-quarkus_test}
+      ELASTIC_APM_ENABLED: 'true'
+      ELASTIC_APM_SERVICE_NAME: 'quarkusapi'
+      ELASTIC_APM_APPLICATION_PACKAGES: 'com.github.juliocesarscheidt'
+      ELASTIC_APM_SERVER_URL: 'http://apm_server:8200'
+      ELASTIC_APM_SERVICE_VERSION: 'v1.0.0'
+    networks:
+      - subnet_0
+
   elasticsearch:
     container_name: elasticsearch
     hostname: elasticsearch
@@ -49,10 +72,31 @@ services:
     volumes:
       - ./apm/apm-server.docker.yml:/usr/share/apm-server/apm-server.yml:rw
 
+  mysql:
+    container_name: mysql
+    hostname: mysql
+    image: mysql:8.0
+    ports:
+      - '3306:3306'
+      - '33060:33060'
+    environment:
+      MYSQL_ROOT_HOST: "%"
+      MYSQL_ROOT_PASSWORD: ${MYSQL_PASS}
+      MYSQL_DATABASE: ${MYSQL_DATABASE:-quarkus_test}
+      TZ: 'America/Sao_Paulo'
+    networks:
+      - subnet_0
+    restart: on-failure
+    volumes:
+      - mysql-data:/var/lib/mysql
+      - ./mysql/init.sql:/docker-entrypoint-initdb.d/init.sql:rw
+
 networks:
   subnet_0:
     driver: bridge
 
 volumes:
   elasticsearch-data: {}
+  mysql-data: {}
 
+secrets: {}
