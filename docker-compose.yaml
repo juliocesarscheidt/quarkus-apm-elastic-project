@@ -1,0 +1,58 @@
+version: '3.4'
+
+services:
+  elasticsearch:
+    container_name: elasticsearch
+    hostname: elasticsearch
+    image: docker.elastic.co/elasticsearch/elasticsearch:6.8.3
+    restart: "on-failure"
+    ports:
+      - 9200:9200
+      - 9300:9300
+    environment:
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - "discovery.type=single-node"
+      - "node.name=elasticsearch"
+      - "cluster.name=es-docker"
+      - "bootstrap.memory_lock=true"
+    networks:
+      - subnet_0
+    volumes:
+      - elasticsearch-data:/usr/share/elasticsearch/data:rw
+
+  kibana:
+    container_name: kibana
+    hostname: kibana
+    image: docker.elastic.co/kibana/kibana:6.8.3
+    restart: "on-failure"
+    ports:
+      - 5601:5601
+    environment:
+      SERVER_NAME: kibana
+      ELASTICSEARCH_HOSTS: '["http://elasticsearch:9200"]'
+    networks:
+      - subnet_0
+    volumes:
+      - ./kibana/kibana.yml:/usr/share/kibana/config/kibana.yml:rw
+
+  apm_server:
+    container_name: apm_server
+    hostname: apm_server
+    user: apm-server
+    image: docker.elastic.co/apm/apm-server:6.8.3
+    restart: "on-failure"
+    ports:
+      - 8200:8200
+      - 5066:5066
+    networks:
+      - subnet_0
+    volumes:
+      - ./apm/apm-server.docker.yml:/usr/share/apm-server/apm-server.yml:rw
+
+networks:
+  subnet_0:
+    driver: bridge
+
+volumes:
+  elasticsearch-data: {}
+
