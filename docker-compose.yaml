@@ -21,13 +21,14 @@ services:
       ELASTIC_APM_APPLICATION_PACKAGES: 'com.github.juliocesarscheidt'
       ELASTIC_APM_SERVER_URL: 'http://apm_server:8200'
       ELASTIC_APM_SERVICE_VERSION: 'v1.0.0'
+      ELASTIC_APM_ENVIRONMENT: "development"
     networks:
       - subnet_0
 
   elasticsearch:
     container_name: elasticsearch
     hostname: elasticsearch
-    image: docker.elastic.co/elasticsearch/elasticsearch:6.8.3
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.7.0
     restart: "on-failure"
     ports:
       - 9200:9200
@@ -38,15 +39,17 @@ services:
       - "node.name=elasticsearch"
       - "cluster.name=es-docker"
       - "bootstrap.memory_lock=true"
+      - "ELASTIC_PASSWORD=elasticpasswd"
     networks:
       - subnet_0
     volumes:
       - elasticsearch-data:/usr/share/elasticsearch/data:rw
+      - ./elasticsearch/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:rw
 
   kibana:
     container_name: kibana
     hostname: kibana
-    image: docker.elastic.co/kibana/kibana:6.8.3
+    image: docker.elastic.co/kibana/kibana:7.7.0
     restart: "on-failure"
     ports:
       - 5601:5601
@@ -61,8 +64,7 @@ services:
   apm_server:
     container_name: apm_server
     hostname: apm_server
-    user: apm-server
-    image: docker.elastic.co/apm/apm-server:6.8.3
+    image: docker.elastic.co/apm/apm-server:7.7.0
     restart: "on-failure"
     ports:
       - 8200:8200
@@ -71,6 +73,22 @@ services:
       - subnet_0
     volumes:
       - ./apm/apm-server.docker.yml:/usr/share/apm-server/apm-server.yml:rw
+
+  metricbeat:
+    container_name: metricbeat
+    hostname: metricbeat
+    image: docker.elastic.co/beats/metricbeat:7.7.0
+    # /usr/local/bin/docker-entrypoint -environment", "container
+    # ./metricbeat modules enable prometheus
+    # ./metricbeat setup --dashboards
+    # entrypoint: ["/usr/local/bin/docker-entrypoint"]
+    # command: ["setup", "--dashboards", "-environment", "container"]
+    restart: "on-failure"
+    networks:
+      - subnet_0
+    volumes:
+      - ./metricbeat/metricbeat.docker.yml:/usr/share/metricbeat/metricbeat.yml:rw
+      - ./metricbeat/prometheus.yml:/usr/share/metricbeat/modules.d/prometheus.yml:rw
 
   mysql:
     container_name: mysql

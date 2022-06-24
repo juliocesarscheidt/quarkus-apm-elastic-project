@@ -1,0 +1,12 @@
+# Module: prometheus
+# Docs: https://www.elastic.co/guide/en/beats/metricbeat/7.7/metricbeat-module-prometheus.html
+
+# Metrics collected from a Prometheus endpoint
+- module: prometheus
+  period: 10s
+  metricsets: ["collector"]
+  hosts: ["quarkusapi:8080"]
+  metrics_path: /q/metrics
+  namespace: api
+  #username: "user"
+  #password: "secret"

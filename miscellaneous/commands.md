@@ -23,6 +23,14 @@ curl -XPUT -H "Content-Type: application/json" http://localhost:9200/_cluster/se
 curl -XPUT -H "Content-Type: application/json" http://localhost:9200/_all/_settings -d '{"index.blocks.read_only_allow_delete": null}'
 
 
+curl -XPUT -H "Content-Type: application/json" http://localhost:9200/_cluster/settings -d '{"persistent": {"xpack.monitoring.collection.enabled": true}}'
+
+curl -XPUT -H "Content-Type: application/json" http://localhost:9200/_cluster/settings -d '{"persistent": {"xpack.monitoring.elasticsearch.collection.enabled": false}}'
+
+
+curl -XGET -H "Content-Type: application/json" http://localhost:9200/_cat/nodes?v=true
+
+
 # export variables from .env
 export $(cat .env | xargs)
 
@@ -65,6 +73,13 @@ java -Xmx500m \
   -jar target/quarkus-app/quarkus-run.jar
 
 
+# kibana monitoring
+http://localhost:5601/app/monitoring
+
+# kibana APM
+http://localhost:5601/app/apm
+
+
 # metrics (prometheus)
 curl --silent -X GET --url 'http://localhost:8080/q/metrics'
 curl --silent -X GET --url 'http://localhost:8080/q/metrics' | egrep -i '*_counter'
@@ -74,21 +89,46 @@ curl --silent -X GET --url 'http://localhost:8080/q/metrics' | egrep -i '*_count
 curl --silent -X GET --url 'http://localhost:8080/q/health/live' | jq -r '.'
 curl --silent -X GET --url 'http://localhost:8080/q/health/ready' | jq -r '.'
 
-
 curl --silent -X GET --url 'http://localhost:8080/v1/messages' | jq -r '.'
-
 
 curl --silent -X GET --url 'http://localhost:8080/v1/messages/1' | jq -r '.'
 
-
 curl --silent -X GET --url 'http://localhost:8080/v1/messages/user/1' | jq -r '.'
-
 
 curl --silent -X POST -H 'Content-type: application/json' --data-raw '{"userId": 1, "content": "Hello World"}' --url 'http://localhost:8080/v1/messages' | jq -r '.'
 
 curl --silent -X PUT -H 'Content-type: application/json' --data-raw '{"userId": 1, "content": "Hello World"}' --url 'http://localhost:8080/v1/messages/1'
 
+while true; do curl --silent -X GET 'http://localhost:8080/v1/messages' | jq -r '.' > /dev/null; done
 
-while true; do curl --silent -X GET 'http://localhost:8080/v1/messages/1' | jq -r '.' > /dev/null; done
+ab -c 1000 -n 10000 http://localhost:8080/v1/messages
+
+
+
+docker exec elasticsearch /bin/bash -c "bin/elasticsearch-setup-passwords auto --batch"
+
+docker exec elasticsearch /bin/bash -c "cat /usr/share/elasticsearch/config/elasticsearch.yml"
+
+
+Changed password for user apm_system
+PASSWORD apm_system = LtNqFuYeDo0NqHgXOnZt
+
+Changed password for user kibana_system
+PASSWORD kibana_system = ynh5pQjnZ6yxJYcYmAxR
+
+Changed password for user kibana
+PASSWORD kibana = ynh5pQjnZ6yxJYcYmAxR
+
+Changed password for user logstash_system
+PASSWORD logstash_system = gfwmBwmzgP5bGWKxQ6od
+
+Changed password for user beats_system
+PASSWORD beats_system = q4sd6h9rY0XLFuvbtxMW
+
+Changed password for user remote_monitoring_user
+PASSWORD remote_monitoring_user = 2HUObu9FIXSuLROP3E2j
+
+Changed password for user elastic
+PASSWORD elastic = K6yp0ZsQwEGN8NDpNbWg
 
 ```

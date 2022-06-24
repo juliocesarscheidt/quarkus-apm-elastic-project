@@ -10,4 +10,7 @@ docker-compose logs -f --tail 50 mysql elasticsearch kibana apm_server
 docker-compose up -d --build quarkusapi
 docker-compose logs -f --tail 50 quarkusapi
 
+docker-compose up -d metricbeat
+docker-compose logs -f --tail 50 metricbeat
+
 ```
