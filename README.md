@@ -68,10 +68,10 @@ done
 
 Some examples of traces:
 
-[List message](./images/list-message-traces.png)
+![List message](./images/list-message-traces.png)
 
-[Create message](./images/create-message-traces.png)
+![Create message](./images/create-message-traces.png)
 
 ## Metricbeat metrics
 
-[List message](./images/metricbeat-metrics.png)
+![List message](./images/metricbeat-metrics.png)
