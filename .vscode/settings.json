@@ -1,6 +1,0 @@
-{
-  "yaml.schemas": {
-    "file:///c%3A/Users/julio/.vscode/extensions/atlassian.atlascode-1.2.3/resources/schemas/pipelines-schema.json": "bitbucket-pipelines.yml",
-    "https://json.schemastore.org/prometheus.json": "file://blackdevs.mint/Julio/Documentos/apm-elastic-project/metricbeat/prometheus.yml"
-  }
-}
