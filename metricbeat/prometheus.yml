@@ -4,7 +4,8 @@
 # Metrics collected from a Prometheus endpoint
 - module: prometheus
   period: 10s
-  metricsets: ["collector"]
+  metricsets:
+    - collector
   hosts: ["quarkusapi:8080"]
   metrics_path: /q/metrics
   namespace: api

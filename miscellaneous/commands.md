@@ -13,6 +13,16 @@ docker exec -it apm_server sh
 cat /usr/share/apm-server/apm-server.yml
 
 
+# setup dashboards on kibana
+docker exec -it metricbeat sh
+
+./metricbeat modules list
+./metricbeat modules enable prometheus
+./metricbeat modules enable elasticsearch
+./metricbeat setup --dashboards -environment container
+
+
+
 docker-compose up -d --build quarkusapi
 docker-compose logs -f --tail 50 quarkusapi
 
@@ -29,6 +39,9 @@ curl -XPUT -H "Content-Type: application/json" http://localhost:9200/_cluster/se
 
 
 curl -XGET -H "Content-Type: application/json" http://localhost:9200/_cat/nodes?v=true
+
+curl -XGET -H "Content-Type: application/json" http://localhost:9200/_cat/indices
+
 
 
 # export variables from .env

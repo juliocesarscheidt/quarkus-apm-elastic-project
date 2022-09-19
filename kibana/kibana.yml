@@ -1,6 +1,7 @@
 ## Default Kibana configuration from Kibana base image.
 ## https://github.com/elastic/kibana/blob/main/config/kibana.yml
 server.name: kibana
+server.port: 5601
 server.host: "0.0.0.0"
 elasticsearch.hosts: ["http://elasticsearch:9200"]
 # elasticsearch.username: kibana_system
@@ -9,3 +10,5 @@ elasticsearch.hosts: ["http://elasticsearch:9200"]
 monitoring.kibana.collection.enabled: true
 
 xpack.reporting.kibanaServer.hostname: localhost
+
+kibana.index: ".kibana"

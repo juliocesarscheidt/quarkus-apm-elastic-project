@@ -78,17 +78,16 @@ services:
     container_name: metricbeat
     hostname: metricbeat
     image: docker.elastic.co/beats/metricbeat:7.7.0
-    # /usr/local/bin/docker-entrypoint -environment", "container
-    # ./metricbeat modules enable prometheus
-    # ./metricbeat setup --dashboards
     # entrypoint: ["/usr/local/bin/docker-entrypoint"]
     # command: ["setup", "--dashboards", "-environment", "container"]
+    # ./metricbeat setup --dashboards -environment container
     restart: "on-failure"
     networks:
       - subnet_0
     volumes:
       - ./metricbeat/metricbeat.docker.yml:/usr/share/metricbeat/metricbeat.yml:rw
       - ./metricbeat/prometheus.yml:/usr/share/metricbeat/modules.d/prometheus.yml:rw
+      - ./metricbeat/elasticsearch.yml:/usr/share/metricbeat/modules.d/elasticsearch.yml:rw
 
   mysql:
     container_name: mysql
