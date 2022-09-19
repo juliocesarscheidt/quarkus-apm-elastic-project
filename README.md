@@ -5,29 +5,36 @@ A sample API fetching data from MySQL, exposing metrics with prometheus and usin
 ## Up and Running
 
 ```bash
+# up database
+docker-compose up -d mysql
+docker-compose logs -f --tail 100 mysql
 
-docker-compose up -d mysql elasticsearch kibana apm_server
-docker-compose logs -f --tail 50 mysql elasticsearch kibana apm_server
+# up ELK stack
+docker-compose up -d elasticsearch kibana apm_server
+docker-compose logs -f --tail 100 elasticsearch kibana apm_server
 
+# build and up the API
 docker-compose up -d --build quarkusapi
-docker-compose logs -f --tail 50 quarkusapi
+docker-compose logs -f --tail 100 quarkusapi
 
+# up metricbeat
 docker-compose up -d metricbeat
-docker-compose logs -f --tail 50 metricbeat
-
+docker-compose logs -f --tail 100 metricbeat
 ```
 
 ## Services
 
 > API: port 8080
+
 > Elasticsearch: port 9200
+
 > Kibana: port 5601
+
 > APM Server: port 8200
 
 ## Trying messages API
 
 ```bash
-
 # service endpoints
 curl --silent -X GET --url "http://127.0.0.1:8080/v1/messages"
 
@@ -55,7 +62,6 @@ while true; do
   curl --silent -X GET --url "http://127.0.0.1:8080/v1/messages/user/$USER_ID" > /dev/null
   curl --silent -X GET --url "http://127.0.0.1:8080/v1/messages" > /dev/null
 done
-
 ```
 
 ## APM Traces
