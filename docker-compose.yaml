@@ -1,5 +1,21 @@
 version: '3.4'
 
+x-default-logging: &logging
+  driver: "json-file"
+  options:
+    max-size: "10m"
+    max-file: "5"
+
+networks:
+  subnet_0:
+    driver: bridge
+
+volumes:
+  elasticsearch-data: {}
+  mysql-data: {}
+
+secrets: {}
+
 services:
   quarkusapi:
     container_name: quarkusapi
@@ -7,23 +23,34 @@ services:
     image: juliocesarmidia/quarkusapi:latest
     build:
       context: ./api
+      cache_from:
+        - juliocesarmidia/quarkusapi:latest
     restart: on-failure
     ports:
       - 8080:8080
     environment:
-      MYSQL_USER: ${MYSQL_USER}
-      MYSQL_PASS: ${MYSQL_PASS}
-      MYSQL_HOST: ${MYSQL_HOST}
-      MYSQL_PORT: ${MYSQL_PORT}
-      MYSQL_DATABASE: ${MYSQL_DATABASE:-quarkus_test}
+      JAVA_OPTIONS: -Xmx500m -Dfile.encoding=UTF-8 -Duser.timezone=America/Sao_Paulo -Djava.security.egd=file:/dev/./urandom -XX:NativeMemoryTracking=summary -XX:+HeapDumpOnOutOfMemoryError
+      DB_HOST: ${DB_HOST}
+      DB_PORT: ${DB_PORT}
+      DB_USERNAME: ${DB_USERNAME}
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_DATABASE: ${DB_DATABASE}
       ELASTIC_APM_ENABLED: 'true'
       ELASTIC_APM_SERVICE_NAME: 'quarkusapi'
       ELASTIC_APM_APPLICATION_PACKAGES: 'com.github.juliocesarscheidt'
       ELASTIC_APM_SERVER_URL: 'http://apm_server:8200'
       ELASTIC_APM_SERVICE_VERSION: 'v1.0.0'
       ELASTIC_APM_ENVIRONMENT: "development"
+    # healthcheck:
+    #   test: "curl -f localhost:8080/q/health/live"
+    #   interval: 30s
+    #   timeout: 5s
+    #   retries: 10
     networks:
       - subnet_0
+    volumes:
+      - ~/.m2:/root/.m2
+    logging: *logging
 
   elasticsearch:
     container_name: elasticsearch
@@ -45,6 +72,7 @@ services:
     volumes:
       - elasticsearch-data:/usr/share/elasticsearch/data:rw
       - ./elasticsearch/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml:rw
+    logging: *logging
 
   kibana:
     container_name: kibana
@@ -60,6 +88,7 @@ services:
       - subnet_0
     volumes:
       - ./kibana/kibana.yml:/usr/share/kibana/config/kibana.yml:rw
+    logging: *logging
 
   apm_server:
     container_name: apm_server
@@ -73,6 +102,7 @@ services:
       - subnet_0
     volumes:
       - ./apm/apm-server.docker.yml:/usr/share/apm-server/apm-server.yml:rw
+    logging: *logging
 
   metricbeat:
     container_name: metricbeat
@@ -88,32 +118,24 @@ services:
       - ./metricbeat/metricbeat.docker.yml:/usr/share/metricbeat/metricbeat.yml:rw
       - ./metricbeat/prometheus.yml:/usr/share/metricbeat/modules.d/prometheus.yml:rw
       - ./metricbeat/elasticsearch.yml:/usr/share/metricbeat/modules.d/elasticsearch.yml:rw
+    logging: *logging
 
   mysql:
     container_name: mysql
     hostname: mysql
     image: mysql:8.0
     ports:
-      - '3306:3306'
-      - '33060:33060'
+      - 3306:3306
+      - 33060:33060
     environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+      MYSQL_DATABASE: ${DB_DATABASE}
       MYSQL_ROOT_HOST: "%"
-      MYSQL_ROOT_PASSWORD: ${MYSQL_PASS}
-      MYSQL_DATABASE: ${MYSQL_DATABASE:-quarkus_test}
       TZ: 'America/Sao_Paulo'
     networks:
       - subnet_0
     restart: on-failure
     volumes:
       - mysql-data:/var/lib/mysql
-      - ./mysql/init.sql:/docker-entrypoint-initdb.d/init.sql:rw
-
-networks:
-  subnet_0:
-    driver: bridge
-
-volumes:
-  elasticsearch-data: {}
-  mysql-data: {}
-
-secrets: {}
+      - ./mysql/data.sql:/docker-entrypoint-initdb.d/data.sql:rw
+    logging: *logging

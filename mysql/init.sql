@@ -1,4 +1,4 @@
-use quarkus_test;
+USE quarkus_api;
 
 create table message (
   id int auto_increment primary key,

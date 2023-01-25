@@ -1,9 +1,9 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>com.github.juliocesarscheidt</groupId>
-  <artifactId>quarkus-test</artifactId>
+  <artifactId>quarkusapi</artifactId>
   <version>0.0.1-SNAPSHOT</version>
-  <name>quarkus-test</name>
+  <name>quarkusapi</name>
   <packaging>jar</packaging>
 
   <properties>
@@ -13,6 +13,10 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <maven-compiler.version>3.8.1</maven-compiler.version>
+    <quarkus-plugin.version>2.9.2.Final</quarkus-plugin.version>
+    <quarkus.platform.artifact-id>quarkus-universe-bom</quarkus.platform.artifact-id>
+    <quarkus.platform.group-id>io.quarkus</quarkus.platform.group-id>
+    <quarkus.platform.version>2.9.2.Final</quarkus.platform.version>
   </properties>
 
   <build>
@@ -20,7 +24,7 @@
       <plugin>
         <groupId>io.quarkus</groupId>
         <artifactId>quarkus-maven-plugin</artifactId>
-        <version>2.9.2.Final</version>
+        <version>${quarkus-plugin.version}</version>
         <executions>
           <execution>
             <goals>
@@ -34,14 +38,15 @@
         <version>${maven-compiler.version}</version>
       </plugin>
     </plugins>
+    <finalName>app</finalName>
   </build>
 
   <dependencyManagement>
     <dependencies>
       <dependency>
-        <groupId>io.quarkus</groupId>
-        <artifactId>quarkus-universe-bom</artifactId>
-        <version>2.9.2.Final</version>
+        <groupId>${quarkus.platform.group-id}</groupId>
+        <artifactId>${quarkus.platform.artifact-id}</artifactId>
+        <version>${quarkus.platform.version}</version>
         <type>pom</type>
         <scope>import</scope>
       </dependency>
@@ -78,7 +83,7 @@
       <groupId>io.quarkus</groupId>
       <artifactId>quarkus-jdbc-mysql</artifactId>
     </dependency>
-        <!-- elastic dependencies -->
+    <!-- elastic dependencies -->
     <dependency>
       <groupId>co.elastic.apm</groupId>
       <artifactId>apm-agent-api</artifactId>

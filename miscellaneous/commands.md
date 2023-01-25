@@ -7,7 +7,7 @@ docker-compose up -d elasticsearch
 docker-compose up -d kibana
 docker-compose up -d apm_server
 
-docker-compose logs -f --tail 50
+docker-compose logs -f --tail 100
 
 docker exec -it apm_server sh
 cat /usr/share/apm-server/apm-server.yml
@@ -24,7 +24,7 @@ docker exec -it metricbeat sh
 
 
 docker-compose up -d --build quarkusapi
-docker-compose logs -f --tail 50 quarkusapi
+docker-compose logs -f --tail 100 quarkusapi
 
 
 # settings on ES to ignore disk threshold (for dev)
@@ -41,6 +41,8 @@ curl -XPUT -H "Content-Type: application/json" http://localhost:9200/_cluster/se
 curl -XGET -H "Content-Type: application/json" http://localhost:9200/_cat/nodes?v=true
 
 curl -XGET -H "Content-Type: application/json" http://localhost:9200/_cat/indices
+
+curl -XGET -H "Content-Type: application/json" http://localhost:9200/_cluster/health
 
 
 
@@ -62,7 +64,7 @@ java -Xmx500m \
 
 
 export ELASTIC_APM_ENABLED=true
-export ELASTIC_APM_SERVICE_NAME=quarkus-test
+export ELASTIC_APM_SERVICE_NAME=quarkusapi
 export ELASTIC_APM_APPLICATION_PACKAGES=com.github.juliocesarscheidt
 export ELASTIC_APM_SERVER_URL=http://localhost:8200
 export ELASTIC_APM_SERVICE_VERSION=v1.0.0
@@ -77,7 +79,7 @@ java -Xmx500m \
 # with APM
 java -Xmx500m \
   -javaagent:./elastic-apm-agent-1.32.0.jar \
-  -Delastic.apm.service_name=quarkus-test \
+  -Delastic.apm.service_name=quarkusapi \
   -Delastic.apm.server_url=http://localhost:8200 \
   -Delastic.apm.secret_token= \
   -Delastic.apm.application_packages=com.github.juliocesarscheidt \
